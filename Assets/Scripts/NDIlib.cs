@@ -445,24 +445,24 @@ namespace ota.ndi
 		//ota add
 		//added find related DllImport only for x64 architecure CPU
 		//
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_initialize", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_initialize", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAs(UnmanagedType.U1)]
 		public static extern bool Initialize();
 
 		// find_create_v2 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_find_create_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_find_create_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern IntPtr find_create_v2(ref find_create_t p_create_settings);
 
 		// find_destroy 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_find_destroy", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_find_destroy", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void find_destroy_64(IntPtr p_instance);
 
 		// find_get_current_sources 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_find_get_current_sources", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_find_get_current_sources", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern IntPtr find_get_current_sources(IntPtr p_instance, ref UInt32 p_no_sources);
 
 		// find_wait_for_sources 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_find_wait_for_sources", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_find_wait_for_sources", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAsAttribute(UnmanagedType.U1)]
 		internal static extern bool find_wait_for_sources(IntPtr p_instance, UInt32 timeout_in_ms);
 
@@ -470,88 +470,88 @@ namespace ota.ndi
 		//ota add
 		//added receive related DllImport only for x64 architecure CPU
 		//
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_create_v3", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_create_v3", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern IntPtr recv_create_v3(ref recv_create_v3_t p_create_settings);
 
 		// recv_destroy 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_destroy", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_destroy", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void recv_destroy(IntPtr p_instance);
 
 		// This function allows you to change the connection to another video source, you can also disconnect it by specifying a IntPtr.Zero here. 
 		// This allows you to preserve a receiver without needing to recreate it.
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_connect", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_connect", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void recv_connect_64(IntPtr p_instance, IntPtr p_src);
 
 
 		// recv_capture_v2 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_capture_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_capture_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern frame_type_e recv_capture_v2(IntPtr p_instance, ref video_frame_v2_t p_video_data, ref audio_frame_v2_t p_audio_data, ref metadata_frame_t p_metadata, UInt32 timeout_in_ms);
 
 		// recv_capture_v3 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_capture_v3", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_capture_v3", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern frame_type_e recv_capture_v3_64(IntPtr p_instance, ref video_frame_v2_t p_video_data, ref audio_frame_v3_t p_audio_data, ref metadata_frame_t p_metadata, UInt32 timeout_in_ms);
 
 		// recv_free_video_v2 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_free_video_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_free_video_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void recv_free_video_v2(IntPtr p_instance, ref video_frame_v2_t p_video_data);
 
 		// recv_free_audio_v2 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_free_audio_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_free_audio_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void recv_free_audio_v2(IntPtr p_instance, ref audio_frame_v2_t p_audio_data);
 
 		// recv_free_audio_v3 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_free_audio_v3", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_free_audio_v3", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void recv_free_audio_v3_64(IntPtr p_instance, ref audio_frame_v3_t p_audio_data);
 
 		// recv_free_metadata 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_free_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_free_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void recv_free_metadata(IntPtr p_instance, ref metadata_frame_t p_metadata);
 
 		// recv_free_string 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_free_string", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_free_string", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void recv_free_string_64(IntPtr p_instance, IntPtr p_string);
 
 		// recv_send_metadata 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_send_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_send_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAsAttribute(UnmanagedType.U1)]
 		internal static extern bool recv_send_metadata_64(IntPtr p_instance, ref metadata_frame_t p_metadata);
 
 		// recv_set_tally 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_set_tally", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_set_tally", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAsAttribute(UnmanagedType.U1)]
 		internal static extern bool recv_set_tally(IntPtr p_instance, ref tally_t p_tally);
 
 		// recv_get_performance 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_get_performance", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_get_performance", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void recv_get_performance_64(IntPtr p_instance, ref recv_performance_t p_total, ref recv_performance_t p_dropped);
 
 		// recv_get_queue 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_get_queue", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_get_queue", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void recv_get_queue_64(IntPtr p_instance, ref recv_queue_t p_total);
 
 		// recv_clear_connection_metadata 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_clear_connection_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_clear_connection_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void recv_clear_connection_metadata_64(IntPtr p_instance);
 
 		// recv_add_connection_metadata 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_add_connection_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_add_connection_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void recv_add_connection_metadata_64(IntPtr p_instance, ref metadata_frame_t p_metadata);
 
 		// recv_get_no_connections 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_get_no_connections", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_get_no_connections", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern int recv_get_no_connections_64(IntPtr p_instance);
 
 		// recv_get_web_control 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_get_web_control", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_get_web_control", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern IntPtr recv_get_web_control_64(IntPtr p_instance);
 
 		// recv_ptz_is_supported 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_ptz_is_supported", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_ptz_is_supported", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAsAttribute(UnmanagedType.U1)]
 		internal static extern bool recv_ptz_is_supported(IntPtr p_instance);
 
 		// recv_recording_is_supported 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_recv_recording_is_supported", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_recv_recording_is_supported", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAsAttribute(UnmanagedType.U1)]
 		internal static extern bool recv_recording_is_supported(IntPtr p_instance);
 
@@ -560,64 +560,64 @@ namespace ota.ndi
 		//added send related DllImport only for x64 architecure CPU
 		//
 		// send_create 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_create", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_create", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern IntPtr send_create(ref send_create_t p_create_settings);
 
 		// send_destroy 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_destroy", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_destroy", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void send_destroy(IntPtr p_instance);
 
 		// send_send_video_v2 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_send_video_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_send_video_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void send_send_video_v2_64(IntPtr p_instance, ref video_frame_v2_t p_video_data);
 
 		// send_send_video_async_v2 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_send_video_async_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_send_video_async_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void send_send_video_async_v2(IntPtr p_instance, ref video_frame_v2_t p_video_data);
 
 		// send_send_audio_v2 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_send_audio_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_send_audio_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void send_send_audio_v2_64(IntPtr p_instance, ref audio_frame_v2_t p_audio_data);
 
 		// send_send_audio_v3 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_send_audio_v3", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_send_audio_v3", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void send_send_audio_v3_64(IntPtr p_instance, ref audio_frame_v3_t p_audio_data);
 
 		// send_send_metadata 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_send_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_send_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void send_send_metadata_64(IntPtr p_instance, ref metadata_frame_t p_metadata);
 
 		// send_capture 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_capture", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_capture", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern frame_type_e send_capture_64(IntPtr p_instance, ref metadata_frame_t p_metadata, UInt32 timeout_in_ms);
 
 		// send_free_metadata 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_free_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_free_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void send_free_metadata_64(IntPtr p_instance, ref metadata_frame_t p_metadata);
 
 		// send_get_tally 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_get_tally", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_get_tally", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAsAttribute(UnmanagedType.U1)]
 		internal static extern bool send_get_tally_64(IntPtr p_instance, ref tally_t p_tally, UInt32 timeout_in_ms);
 
 		// send_get_no_connections 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_get_no_connections", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_get_no_connections", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern int send_get_no_connections_64(IntPtr p_instance, UInt32 timeout_in_ms);
 
 		// send_clear_connection_metadata 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_clear_connection_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_clear_connection_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void send_clear_connection_metadata_64(IntPtr p_instance);
 
 		// send_add_connection_metadata 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_add_connection_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_add_connection_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void send_add_connection_metadata_64(IntPtr p_instance, ref metadata_frame_t p_metadata);
 
 		// send_set_failover 
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_set_failover", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_set_failover", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void send_set_failover_64(IntPtr p_instance, ref source_t p_failover_source);
 
 		// Retrieve the source information for the given sender instance.  This pointer is valid until NDIlib_send_destroy is called.
-		[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_get_source_name", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Config.DllName, EntryPoint = "NDIlib_send_get_source_name", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern IntPtr send_get_source_name_64(IntPtr p_instance);
 
 	} // class NDIlib
