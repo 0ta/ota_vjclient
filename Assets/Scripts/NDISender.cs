@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -195,9 +195,9 @@ namespace ota.ndi
             // Send via NDI
             NDIlib.send_send_video_async_v2(_sendInstance, ref frame);
 
-            //Œãˆ—
-            //ƒƒ‚ƒŠ[ƒŠ[ƒN‚µ‚Ä‚¢‚é‚æ‚¤‚ÉŒ©‚¦‚È‚¢BBB‰½ŒÌ‚ÉBB
-            //‚Æ‚è‚ ‚¦‚¸ƒRƒƒ“ƒg‚É‚µ‚Ä‚¨‚­
+            //å¾Œå‡¦ç†
+            //ãƒ¡ãƒ¢ãƒªãƒ¼ãƒªãƒ¼ã‚¯ã—ã¦ã„ã‚‹ã‚ˆã†ã«è¦‹ãˆãªã„ã€‚ã€‚ã€‚ä½•æ•…ã«ã€‚ã€‚
+            //ã¨ã‚Šã‚ãˆãšã‚³ãƒ¡ãƒ³ãƒˆã«ã—ã¦ãŠã
             //Marshal.FreeHGlobal(pmetadata);
             //pmetadata = IntPtr.Zero;
         }
