@@ -21,8 +21,8 @@ namespace ota.ndi
         [SerializeField] private int _frameRateNumerator = 30000;
         [SerializeField] private int _frameRateDenominator = 1001;
 
+        [SerializeField] private Camera _arcamera;
         [SerializeField] private RawImage _preview;
-        [SerializeField] private RawImage _tmppreview;
 
         private IFrameTextureSource _frameTextureSource;
         private IntPtr _sendInstance;
@@ -98,6 +98,27 @@ namespace ota.ndi
             }
         }
 
+        //private ComputeBuffer Capture()
+        //{
+        //    // #if !UNITY_EDITOR && UNITY_ANDROID
+        //    //             bool vflip = true;
+        //    // #else
+        //    //             bool vflip = false;
+        //    // #endif
+        //    bool vflip = false;
+        //    if (!_frameTextureSource.IsReady) return null;
+
+        //    Texture texture = _frameTextureSource.GetTexture();
+        //    _preview.texture = texture;
+
+        //    _width = texture.width;
+        //    _height = texture.height;
+
+        //    ComputeBuffer converted = _formatConverter.Encode(texture, _enableAlpha, vflip);
+
+        //    return converted;
+        //}
+
         private ComputeBuffer Capture()
         {
             // #if !UNITY_EDITOR && UNITY_ANDROID
@@ -105,16 +126,26 @@ namespace ota.ndi
             // #else
             //             bool vflip = false;
             // #endif
+            // vflipはiOSの場合常にfalse
             bool vflip = false;
-            if (!_frameTextureSource.IsReady) return null;
 
-            Texture texture = _frameTextureSource.GetTexture();
+            // ARCameraのスナップショットを取得してBinary化する
+            _arcamera.targetTexture = (RenderTexture)_frameTextureSource.GetTexture();
+            var currentRT = RenderTexture.active;
+            RenderTexture.active = _arcamera.targetTexture;
+            _arcamera.Render();
+            Texture texture = _arcamera.targetTexture;
+
+            // [Debug用]Previewに格納
             _preview.texture = texture;
 
             _width = texture.width;
             _height = texture.height;
-
             ComputeBuffer converted = _formatConverter.Encode(texture, _enableAlpha, vflip);
+
+            // RenderTextureを元に戻す
+            RenderTexture.active = currentRT;
+            _arcamera.targetTexture = null;
 
             return converted;
         }

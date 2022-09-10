@@ -3,7 +3,11 @@ guid: d482f8b072e6c7f498bc62634a57937d
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - _encodeCompute: {fileID: 7200000, guid: bb6d0f65459cb2c4ba0ea51b5e24728d, type: 3}
+  - _frameTextureSourceContainer: {instanceID: 0}
+  - _preview: {instanceID: 0}
+  - _tmppreview: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
