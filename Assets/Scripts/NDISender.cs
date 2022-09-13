@@ -7,6 +7,7 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR.ARFoundation;
 
 namespace ota.ndi
 {
@@ -23,6 +24,10 @@ namespace ota.ndi
 
         [SerializeField] private Camera _arcamera;
         [SerializeField] private RawImage _preview;
+
+        [SerializeField]
+        [Tooltip("The AROcclusionManager which will produce depth textures.")]
+        AROcclusionManager m_OcclusionManager;
 
         private IFrameTextureSource _frameTextureSource;
         private IntPtr _sendInstance;
@@ -137,8 +142,8 @@ namespace ota.ndi
             Texture texture = _arcamera.targetTexture;
 
             // [Debug用]Previewに格納
-            _preview.texture = texture;
-
+            //_preview.texture = texture;
+            _preview.texture = m_OcclusionManager.humanDepthTexture;
             _width = texture.width;
             _height = texture.height;
             ComputeBuffer converted = _formatConverter.Encode(texture, _enableAlpha, vflip);
