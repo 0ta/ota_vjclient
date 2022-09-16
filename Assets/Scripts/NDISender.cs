@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using TMPro;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 
 namespace ota.ndi
 {
@@ -23,11 +25,16 @@ namespace ota.ndi
         [SerializeField] private int _frameRateDenominator = 1001;
 
         [SerializeField] private Camera _arcamera;
+
         [SerializeField] private RawImage _preview;
+        [SerializeField] private TextMeshProUGUI _informationText;
 
         [SerializeField]
         [Tooltip("The AROcclusionManager which will produce depth textures.")]
         AROcclusionManager m_OcclusionManager;
+        [SerializeField]
+        [Tooltip("The ARCameraManager which will produce frame events.")]
+        ARCameraManager m_CameraManager;
 
         private IFrameTextureSource _frameTextureSource;
         private IntPtr _sendInstance;
@@ -65,6 +72,14 @@ namespace ota.ndi
             }
 
             StartCoroutine(CaptureCoroutine());
+        }
+
+        // Temporary method
+        private void Update()
+        {
+            var config = m_CameraManager.currentConfiguration;
+            var configtext = $"{config?.width}x{config?.height}{((bool)(config?.framerate.HasValue) ? $" at {config?.framerate.Value} Hz" : "")}{(config?.depthSensorSupported == Supported.Supported ? " depth sensor" : "")}";
+            _informationText.text = configtext;
         }
 
         void OnDestroy()
@@ -176,29 +191,6 @@ namespace ota.ndi
             //{
             //    return;
             //}
-
-
-
-
-
-
-            //for check
-            //Debug.Log("test!!");
-            //StreamWriter sw = new StreamWriter("../TextDataClient.txt", false);
-            //for (int i = 0; i < _bytes.Length; i++)
-            //{
-            //    Debug.Log(_bytes[i]);
-            //    sw.WriteLine(_bytes[i]);
-            //}
-            //sw.Flush();
-            //sw.Close();
-            //throw new SystemException();
-            //Texture2D testtex = new Texture2D(256, 256, TextureFormat.RGBA32, false);
-            //testtex.SetPixelData(_bytes, 0, 0);
-            //testtex.LoadRawTextureData(_bytes);
-            //testtex.Apply();
-            //Destroy(_tmppreview.texture);
-            //_tmppreview.texture = testtex;
 
             // metadata test
             //string stringA = "hello ota!!";
