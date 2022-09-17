@@ -77,9 +77,31 @@ namespace ota.ndi
         // Temporary method
         private void Update()
         {
+            //
+            // まずはLandscapeのみ考慮
+            //
+
+            // Camera manager related information text is displayed
             var config = m_CameraManager.currentConfiguration;
             var configtext = $"{config?.width}x{config?.height}{((bool)(config?.framerate.HasValue) ? $" at {config?.framerate.Value} Hz" : "")}{(config?.depthSensorSupported == Supported.Supported ? " depth sensor" : "")}";
             _informationText.text = configtext;
+
+            // Caluculate aspectratio
+            float textureAspectRatio = (m_OcclusionManager.humanDepthTexture == null) ? 1.0f : ((float)m_OcclusionManager.humanDepthTexture.width / (float)m_OcclusionManager.humanDepthTexture.height);
+            UpdateRawImage(textureAspectRatio);
+        }
+
+        void UpdateRawImage(float textureAspectRatio)
+        {
+            float minDimension =  700.0f;
+            float maxDimension = Mathf.Round(minDimension * textureAspectRatio);
+            Vector2 rectSize = new Vector2(maxDimension, minDimension);
+
+            // Determine the raw image material and maxDistance material parameter based on the display mode.
+            // DepthMaterialがなにやっているか不明。。。とりあえず無視。
+
+            // Update the raw image dimensions and the raw image material parameters.
+            _preview.rectTransform.sizeDelta = rectSize;
         }
 
         void OnDestroy()
