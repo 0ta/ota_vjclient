@@ -45,6 +45,8 @@ namespace ota.ndi
         private NativeArray<byte>? _nativeArray;
         private byte[] _bytes;
 
+        private Texture2D _sourceOriginTexture;
+
         // Start is called before the first frame update
         void Start()
         {
@@ -71,7 +73,55 @@ namespace ota.ndi
                 return;
             }
 
-            StartCoroutine(CaptureCoroutine());
+            m_CameraManager.frameReceived += OnCameraFrameEventReceived;
+            //m_DisplayRotationMatrix = Matrix4x4.identity;
+
+            //StartCoroutine(CaptureCoroutine());
+        }
+
+        unsafe private void OnCameraFrameEventReceived(ARCameraFrameEventArgs cameraFrameEventArgs)
+        {
+            //1. CreateCameraFeedTexture
+            RefreshCameraFeedTexture();
+
+            //2. Create UYVA image
+            ComputeBuffer converted = Capture();
+            if (converted == null)
+            {
+                return;
+            }
+
+            //3. Send Image via NDI
+            Send(converted);
+        }
+
+        unsafe private void RefreshCameraFeedTexture()
+        {
+            XRCpuImage image;
+            if (!m_CameraManager.TryAcquireLatestCpuImage(out image))
+                return;
+
+            var conversionParams = new XRCpuImage.ConversionParams
+            (
+                image,
+                TextureFormat.RGBA32,
+                XRCpuImage.Transformation.None
+            );
+
+            if (_sourceOriginTexture == null || _sourceOriginTexture.width != image.width || _sourceOriginTexture.height != image.height)
+            {
+                _sourceOriginTexture = new Texture2D(conversionParams.outputDimensions.x,
+                                         conversionParams.outputDimensions.y,
+                                         conversionParams.outputFormat, false);
+            }
+
+            var buffer = _sourceOriginTexture.GetRawTextureData<byte>();
+            image.Convert(conversionParams, new IntPtr(buffer.GetUnsafePtr()), buffer.Length);
+
+            _sourceOriginTexture.Apply();
+
+            buffer.Dispose();
+            image.Dispose();
         }
 
         // Temporary method
@@ -181,9 +231,10 @@ namespace ota.ndi
             // [Debug用]Previewに格納
             //_preview.texture = texture;
             _preview.texture = m_OcclusionManager.humanDepthTexture;
-            _width = texture.width;
-            _height = texture.height;
-            ComputeBuffer converted = _formatConverter.Encode(texture, _enableAlpha, vflip);
+            _width = _sourceOriginTexture.width;
+            _height = _sourceOriginTexture.height;
+            ComputeBuffer converted = _formatConverter.Encode(_sourceOriginTexture, _enableAlpha, vflip);
+            //ComputeBuffer converted = _formatConverter.Encode(texture, _enableAlpha, vflip);
 
             // RenderTextureを元に戻す
             RenderTexture.active = currentRT;
