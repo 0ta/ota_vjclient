@@ -20,7 +20,6 @@ namespace ota.ndi
         [SerializeField] private string _ndiName;
         [SerializeField] private ComputeShader _encodeCompute;
         [SerializeField] private bool _enableAlpha = false;
-        [SerializeField] private GameObject _frameTextureSourceContainer;
         [SerializeField] private int _frameRateNumerator = 30000;
         [SerializeField] private int _frameRateDenominator = 1001;
 
@@ -36,7 +35,6 @@ namespace ota.ndi
         [Tooltip("The ARCameraManager which will produce frame events.")]
         ARCameraManager m_CameraManager;
 
-        private IFrameTextureSource _frameTextureSource;
         private IntPtr _sendInstance;
         private FormatConverter _formatConverter;
         private int _width;
@@ -57,8 +55,6 @@ namespace ota.ndi
                 Debug.Log("NDIlib can't be initialized.");
                 return;
             }
-
-            _frameTextureSource = _frameTextureSourceContainer.GetComponent<IFrameTextureSource>();
 
             _formatConverter = new FormatConverter(_encodeCompute);
 
@@ -139,6 +135,9 @@ namespace ota.ndi
             // Caluculate aspectratio
             float textureAspectRatio = (m_OcclusionManager.humanDepthTexture == null) ? 1.0f : ((float)m_OcclusionManager.humanDepthTexture.width / (float)m_OcclusionManager.humanDepthTexture.height);
             UpdateRawImage(textureAspectRatio);
+
+            // [Debug用]Previewに格納
+            _preview.texture = m_OcclusionManager.humanDepthTexture;
         }
 
         void UpdateRawImage(float textureAspectRatio)
@@ -174,43 +173,6 @@ namespace ota.ndi
             }
         }
 
-        private IEnumerator CaptureCoroutine()
-        {
-            for (var eof = new WaitForEndOfFrame(); true;)
-            {
-                yield return eof;
-
-                ComputeBuffer converted = Capture();
-                if (converted == null)
-                {
-                    continue;
-                }
-
-                Send(converted);
-            }
-        }
-
-        //private ComputeBuffer Capture()
-        //{
-        //    // #if !UNITY_EDITOR && UNITY_ANDROID
-        //    //             bool vflip = true;
-        //    // #else
-        //    //             bool vflip = false;
-        //    // #endif
-        //    bool vflip = false;
-        //    if (!_frameTextureSource.IsReady) return null;
-
-        //    Texture texture = _frameTextureSource.GetTexture();
-        //    _preview.texture = texture;
-
-        //    _width = texture.width;
-        //    _height = texture.height;
-
-        //    ComputeBuffer converted = _formatConverter.Encode(texture, _enableAlpha, vflip);
-
-        //    return converted;
-        //}
-
         private ComputeBuffer Capture()
         {
             // #if !UNITY_EDITOR && UNITY_ANDROID
@@ -220,26 +182,9 @@ namespace ota.ndi
             // #endif
             // vflipはiOSの場合常にfalse
             bool vflip = false;
-
-            // ARCameraのスナップショットを取得してBinary化する
-            _arcamera.targetTexture = (RenderTexture)_frameTextureSource.GetTexture();
-            var currentRT = RenderTexture.active;
-            RenderTexture.active = _arcamera.targetTexture;
-            _arcamera.Render();
-            Texture texture = _arcamera.targetTexture;
-
-            // [Debug用]Previewに格納
-            //_preview.texture = texture;
-            _preview.texture = m_OcclusionManager.humanDepthTexture;
             _width = _sourceOriginTexture.width;
             _height = _sourceOriginTexture.height;
             ComputeBuffer converted = _formatConverter.Encode(_sourceOriginTexture, _enableAlpha, vflip);
-            //ComputeBuffer converted = _formatConverter.Encode(texture, _enableAlpha, vflip);
-
-            // RenderTextureを元に戻す
-            RenderTexture.active = currentRT;
-            _arcamera.targetTexture = null;
-
             return converted;
         }
 
@@ -303,43 +248,5 @@ namespace ota.ndi
             //pmetadata = IntPtr.Zero;
         }
 
-        //private unsafe void Send(ComputeBuffer buffer)
-        //{
-        //    if (_nativeArray == null)
-        //    {
-        //        int length = Utils.FrameDataCount(_width, _height, _enableAlpha) * 4;
-        //        _nativeArray = new NativeArray<byte>(length, Allocator.Persistent);
-
-        //        _bytes = new byte[length];
-        //    }
-
-        //    buffer.GetData(_bytes);
-        //    _nativeArray.Value.CopyFrom(_bytes);
-
-        //    void* pdata = NativeArrayUnsafeUtility.GetUnsafeReadOnlyPtr(_nativeArray.Value);
-
-        //    // Data size verification
-        //    if (_nativeArray.Value.Length / sizeof(uint) != Utils.FrameDataCount(_width, _height, _enableAlpha))
-        //    {
-        //        return;
-        //    }
-
-        //    // Frame data setup
-        //    var frame = new NDIlib.video_frame_v2_t
-        //    {
-        //        xres = _width,
-        //        yres = _height,
-        //        line_stride_in_bytes = _width * 2,
-        //        frame_rate_N = _frameRateNumerator,
-        //        frame_rate_D = _frameRateDenominator,
-        //        FourCC = _enableAlpha ? NDIlib.FourCC_type_e.FourCC_type_UYVA : NDIlib.FourCC_type_e.FourCC_type_UYVY,
-        //        frame_format_type = NDIlib.frame_format_type_e.frame_format_type_progressive,
-        //        p_data = (IntPtr)pdata,
-        //        p_metadata = IntPtr.Zero,
-        //    };
-
-        //    // Send via NDI
-        //    NDIlib.send_send_video_async_v2(_sendInstance, ref frame);
-        //}
     }
 }

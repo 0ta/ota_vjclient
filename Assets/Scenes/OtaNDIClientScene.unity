@@ -976,6 +976,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _ndiClientRenderTexture: {fileID: 8400000, guid: 35eb0b88b625a4b429414923ed35586a, type: 2}
   _isReady: 1
+  <IsReady>k__BackingField: 0
 --- !u!4 &1060771508
 Transform:
   m_ObjectHideFlags: 0
@@ -1091,7 +1092,6 @@ MonoBehaviour:
   _ndiName: otatestndi
   _encodeCompute: {fileID: 7200000, guid: bb6d0f65459cb2c4ba0ea51b5e24728d, type: 3}
   _enableAlpha: 1
-  _frameTextureSourceContainer: {fileID: 1060771506}
   _frameRateNumerator: 30000
   _frameRateDenominator: 1001
   _arcamera: {fileID: 527220349}
@@ -1149,7 +1149,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -940, y: 90}
+  m_AnchoredPosition: {x: 910, y: 790}
   m_SizeDelta: {x: 500, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1779491493
