@@ -27,7 +27,8 @@ namespace ota.ndi
 
         [SerializeField] private RawImage _depthPreview;
         [SerializeField] private RawImage _stencilPreview;
-        [SerializeField] private TextMeshProUGUI _informationText;
+        [SerializeField] private TextMeshProUGUI _resolutionInfoText;
+        [SerializeField] private TextMeshProUGUI _statusInfoText;
 
         [SerializeField]
         [Tooltip("The AROcclusionManager which will produce depth textures.")]
@@ -74,10 +75,21 @@ namespace ota.ndi
                 return;
             }
 
-            m_CameraManager.frameReceived += OnCameraFrameEventReceived;
             //m_DisplayRotationMatrix = Matrix4x4.identity;
+        }
 
-            //StartCoroutine(CaptureCoroutine());
+        void OnEnable()
+        {
+            // Camera callback setup
+            m_CameraManager.frameReceived += OnCameraFrameEventReceived;
+            //m_OcclusionManager.frameReceived += OnOcclusionFrameEventReceived;
+        }
+
+        void OnDisable()
+        {
+            // Camera callback termination
+            m_CameraManager.frameReceived -= OnCameraFrameEventReceived;
+            //m_OcclusionManager.frameReceived -= OnOcclusionFrameEventReceived;
         }
 
         unsafe private void OnCameraFrameEventReceived(ARCameraFrameEventArgs cameraFrameEventArgs)
@@ -124,7 +136,7 @@ namespace ota.ndi
             buffer.Dispose();
             image.Dispose();
 
-            _sourceDepthTexture = m_OcclusionManager.humanDepthTexture;
+            _sourceDepthTexture = m_OcclusionManager.environmentDepthTexture;
             _sourceStencilTexture = m_OcclusionManager.humanStencilTexture;
         }
 
@@ -133,7 +145,8 @@ namespace ota.ndi
             // Camera manager related information text is displayed
             var config = m_CameraManager.currentConfiguration;
             var configtext = $"{config?.width}x{config?.height}{((bool)(config?.framerate.HasValue) ? $" at {config?.framerate.Value} Hz" : "")}{(config?.depthSensorSupported == Supported.Supported ? " depth sensor" : "")}";
-            _informationText.text = configtext;
+            _resolutionInfoText.text = configtext;
+            _statusInfoText.text = "Position: " + Format(_arcamera.transform.position) + "\n" + "Rotation: " + Format(_arcamera.transform.rotation.eulerAngles);
 
             // Caluculate aspectratio
             float textureAspectRatio = (m_OcclusionManager.humanDepthTexture == null) ? 1.0f : ((float)m_OcclusionManager.humanDepthTexture.width / (float)m_OcclusionManager.humanDepthTexture.height);
@@ -145,6 +158,11 @@ namespace ota.ndi
             // [Debug用]Previewに格納
             _depthPreview.texture = _sourceDepthTexture;
             _stencilPreview.texture = _sourceStencilTexture;
+        }
+
+        private string Format(Vector3 v)
+        {
+            return $"({v.x,7:F2}, {v.y,7:F2}, {v.z,7:F2})";
         }
 
         void UpdateRawImage(float textureAspectRatio)
