@@ -30,6 +30,8 @@ namespace ota.ndi
         [SerializeField] private TextMeshProUGUI _resolutionInfoText;
         [SerializeField] private TextMeshProUGUI _statusInfoText;
 
+        [SerializeField] private Shader _shader;
+
         [SerializeField]
         [Tooltip("The AROcclusionManager which will produce depth textures.")]
         AROcclusionManager m_OcclusionManager;
@@ -50,6 +52,9 @@ namespace ota.ndi
         private Texture2D _sourceStencilTexture;
 
         private float _textureAspectRatio = 1.0f;
+
+        private Material _muxMaterial;
+        private RenderTexture _senderRT;
 
         // Start is called before the first frame update
         void Start()
@@ -75,6 +80,9 @@ namespace ota.ndi
                 return;
             }
 
+            _muxMaterial = new Material(_shader);
+            _senderRT = new RenderTexture(1920, 1440, 0);
+            _senderRT.Create();
             //m_DisplayRotationMatrix = Matrix4x4.identity;
         }
 
@@ -138,6 +146,12 @@ namespace ota.ndi
 
             _sourceDepthTexture = m_OcclusionManager.environmentDepthTexture;
             _sourceStencilTexture = m_OcclusionManager.humanStencilTexture;
+
+            _muxMaterial.SetTexture("_SourceTex", _sourceOriginTexture);
+            _muxMaterial.SetTexture("_HumanStencil", _sourceStencilTexture);
+            _muxMaterial.SetTexture("_EnvironmentDepth", _sourceDepthTexture);
+            _senderRT.Release();
+            Graphics.Blit(null, _senderRT, _muxMaterial, 0);
         }
 
         private void Update()
@@ -187,6 +201,8 @@ namespace ota.ndi
 
         private void ReleaseInternalObjects()
         {
+            Destroy(_muxMaterial);
+            Destroy(_senderRT);
             if (_sendInstance != IntPtr.Zero)
             {
                 NDIlib.send_destroy(_sendInstance);
@@ -209,9 +225,10 @@ namespace ota.ndi
             // #endif
             // vflipはiOSの場合常にfalse
             bool vflip = false;
-            _width = _sourceOriginTexture.width;
-            _height = _sourceOriginTexture.height;
-            ComputeBuffer converted = _formatConverter.Encode(_sourceOriginTexture, _enableAlpha, vflip);
+            _width = _senderRT.width;
+            _height = _senderRT.height;
+            Debug.Log(_width + " * " + _height);
+            ComputeBuffer converted = _formatConverter.Encode(_senderRT, _enableAlpha, vflip);
             return converted;
         }
 

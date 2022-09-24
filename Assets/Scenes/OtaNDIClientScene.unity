@@ -1015,7 +1015,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HumanSegmentationStencilMode: 3
   m_HumanSegmentationDepthMode: 2
-  m_EnvironmentDepthMode: 1
+  m_EnvironmentDepthMode: 3
   m_EnvironmentDepthTemporalSmoothing: 1
   m_OcclusionPreferenceMode: 0
 --- !u!1 &1171230682
@@ -1125,6 +1125,7 @@ MonoBehaviour:
   _stencilPreview: {fileID: 926814553}
   _resolutionInfoText: {fileID: 1779491493}
   _statusInfoText: {fileID: 1469084365}
+  _shader: {fileID: 4800000, guid: 253b31997af7f47f9ad6b1c7c9aa23d1, type: 3}
   m_OcclusionManager: {fileID: 1016308350}
   m_CameraManager: {fileID: 527220351}
 --- !u!4 &1278506283
