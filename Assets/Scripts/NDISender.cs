@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
 using TMPro;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -55,6 +56,9 @@ namespace ota.ndi
 
         private Material _muxMaterial;
         private RenderTexture _senderRT;
+        private Matrix4x4 _projection;
+
+        private String _metadataStr;
 
         // Start is called before the first frame update
         void Start()
@@ -83,7 +87,6 @@ namespace ota.ndi
             _muxMaterial = new Material(_shader);
             _senderRT = new RenderTexture(1920, 1440, 0);
             _senderRT.Create();
-            //m_DisplayRotationMatrix = Matrix4x4.identity;
         }
 
         void OnEnable()
@@ -100,20 +103,96 @@ namespace ota.ndi
             //m_OcclusionManager.frameReceived -= OnOcclusionFrameEventReceived;
         }
 
+        void OnDestroy()
+        {
+            ReleaseInternalObjects();
+        }
+
+        private void ReleaseInternalObjects()
+        {
+            Destroy(_muxMaterial);
+            Destroy(_senderRT);
+            if (_sendInstance != IntPtr.Zero)
+            {
+                NDIlib.send_destroy(_sendInstance);
+                _sendInstance = IntPtr.Zero;
+            }
+
+            if (_nativeArray != null)
+            {
+                _nativeArray.Value.Dispose();
+                _nativeArray = null;
+            }
+        }
+
+        private void Update()
+        {
+            // Camera manager related information text is displayed
+            var config = m_CameraManager.currentConfiguration;
+            var configtext = $"{config?.width}x{config?.height}{((bool)(config?.framerate.HasValue) ? $" at {config?.framerate.Value} Hz" : "")}{(config?.depthSensorSupported == Supported.Supported ? " depth sensor" : "")}";
+            _resolutionInfoText.text = configtext;
+            _statusInfoText.text = "Position: " + Utils.FormatVector3Position(_arcamera.transform.position) + "\n" + "Rotation: " + Utils.FormatVector3Position(_arcamera.transform.rotation.eulerAngles) + "\n" + "Projection: " + _projection;
+
+            // Caluculate aspectratio
+            float textureAspectRatio = (m_OcclusionManager.humanDepthTexture == null) ? 1.0f : ((float)m_OcclusionManager.humanDepthTexture.width / (float)m_OcclusionManager.humanDepthTexture.height);
+            if (_textureAspectRatio != textureAspectRatio)
+            {
+                UpdateRawImage(textureAspectRatio);
+            }
+
+            // [Debug用]Previewに格納
+            _depthPreview.texture = _sourceDepthTexture;
+            _stencilPreview.texture = _sourceStencilTexture;
+        }
+
+        private void UpdateRawImage(float textureAspectRatio)
+        {
+            float minDimension = 500.0f;
+            float maxDimension = Mathf.Round(minDimension * textureAspectRatio);
+            Vector2 rectSize = new Vector2(maxDimension, minDimension);
+
+            // Determine the raw image material and maxDistance material parameter based on the display mode.
+            // DepthMaterialがなにやっているか不明。。。とりあえず無視。
+
+            // Update the raw image dimensions and the raw image material parameters.
+            _depthPreview.rectTransform.sizeDelta = rectSize;
+            _stencilPreview.rectTransform.sizeDelta = rectSize;
+            _stencilPreview.rectTransform.position = new Vector3(_depthPreview.rectTransform.position.x + maxDimension, _depthPreview.rectTransform.position.y, _depthPreview.rectTransform.position.z);
+        }
+
         unsafe private void OnCameraFrameEventReceived(ARCameraFrameEventArgs cameraFrameEventArgs)
         {
             //1. CreateCameraFeedTexture
             RefreshCameraFeedTexture();
 
-            //2. Create UYVA image
+            //2. Meke XML for Metadata used by NDI connection
+            makeXML4Metadata(cameraFrameEventArgs);
+
+            //3. Create UYVA image
             ComputeBuffer converted = Capture();
             if (converted == null)
             {
                 return;
             }
 
-            //3. Send Image via NDI
+            //4. Send Image via NDI
             Send(converted);
+        }
+
+        private void makeXML4Metadata(ARCameraFrameEventArgs args)
+        {
+            if (args.projectionMatrix.HasValue)
+            {
+                _projection = args.projectionMatrix.Value;
+
+                // Aspect ratio compensation (camera vs. 16:9)
+                //_projection[1, 1] *= (16.0f / 9) / _camera.aspect;
+            }
+
+            MetadataInfo metainfo = new MetadataInfo(_arcamera.transform.position, _arcamera.transform.rotation, _projection);
+            String jsonString = JsonConvert.SerializeObject(metainfo);
+            _metadataStr = $"<metadata><![CDATA[{jsonString}]]></metadata>";
+            //Debug.Log(_metadataStr);
         }
 
         unsafe private void RefreshCameraFeedTexture()
@@ -154,68 +233,6 @@ namespace ota.ndi
             Graphics.Blit(null, _senderRT, _muxMaterial, 0);
         }
 
-        private void Update()
-        {
-            // Camera manager related information text is displayed
-            var config = m_CameraManager.currentConfiguration;
-            var configtext = $"{config?.width}x{config?.height}{((bool)(config?.framerate.HasValue) ? $" at {config?.framerate.Value} Hz" : "")}{(config?.depthSensorSupported == Supported.Supported ? " depth sensor" : "")}";
-            _resolutionInfoText.text = configtext;
-            _statusInfoText.text = "Position: " + Format(_arcamera.transform.position) + "\n" + "Rotation: " + Format(_arcamera.transform.rotation.eulerAngles);
-
-            // Caluculate aspectratio
-            float textureAspectRatio = (m_OcclusionManager.humanDepthTexture == null) ? 1.0f : ((float)m_OcclusionManager.humanDepthTexture.width / (float)m_OcclusionManager.humanDepthTexture.height);
-            if (_textureAspectRatio != textureAspectRatio)
-            {
-                UpdateRawImage(textureAspectRatio);
-            }
-
-            // [Debug用]Previewに格納
-            _depthPreview.texture = _sourceDepthTexture;
-            _stencilPreview.texture = _sourceStencilTexture;
-        }
-
-        private string Format(Vector3 v)
-        {
-            return $"({v.x,7:F2}, {v.y,7:F2}, {v.z,7:F2})";
-        }
-
-        void UpdateRawImage(float textureAspectRatio)
-        {
-            float minDimension =  500.0f;
-            float maxDimension = Mathf.Round(minDimension * textureAspectRatio);
-            Vector2 rectSize = new Vector2(maxDimension, minDimension);
-
-            // Determine the raw image material and maxDistance material parameter based on the display mode.
-            // DepthMaterialがなにやっているか不明。。。とりあえず無視。
-
-            // Update the raw image dimensions and the raw image material parameters.
-            _depthPreview.rectTransform.sizeDelta = rectSize;
-            _stencilPreview.rectTransform.sizeDelta = rectSize;
-            _stencilPreview.rectTransform.position = new Vector3(_depthPreview.rectTransform.position.x + maxDimension, _depthPreview.rectTransform.position.y, _depthPreview.rectTransform.position.z);
-        }
-
-        void OnDestroy()
-        {
-            ReleaseInternalObjects();
-        }
-
-        private void ReleaseInternalObjects()
-        {
-            Destroy(_muxMaterial);
-            Destroy(_senderRT);
-            if (_sendInstance != IntPtr.Zero)
-            {
-                NDIlib.send_destroy(_sendInstance);
-                _sendInstance = IntPtr.Zero;
-            }
-
-            if (_nativeArray != null)
-            {
-                _nativeArray.Value.Dispose();
-                _nativeArray = null;
-            }
-        }
-
         private ComputeBuffer Capture()
         {
             // #if !UNITY_EDITOR && UNITY_ANDROID
@@ -227,7 +244,6 @@ namespace ota.ndi
             bool vflip = false;
             _width = _senderRT.width;
             _height = _senderRT.height;
-            Debug.Log(_width + " * " + _height);
             ComputeBuffer converted = _formatConverter.Encode(_senderRT, _enableAlpha, vflip);
             return converted;
         }
@@ -257,8 +273,8 @@ namespace ota.ndi
             // metadata test
             //string stringA = "hello ota!!";
             //string stringA = "<? xml version = \"1.0\" ?><PurchaseOrder PurchaseOrderNumber = \"99503\"></PurchaseOrder>";
-            string stringA = "<PurchaseOrder PurchaseOrderNumber = \"99503\">test!!</PurchaseOrder>";
-            IntPtr pmetadata = Marshal.StringToHGlobalAnsi(stringA);
+            //string stringA = "<PurchaseOrder PurchaseOrderNumber = \"99503\">test!!</PurchaseOrder>";
+            IntPtr pmetadata = Marshal.StringToHGlobalAnsi(_metadataStr);
 
 
             // Frame data setup
