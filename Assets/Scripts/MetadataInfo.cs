@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ namespace ota.ndi
         {
             this.arcameraPosition = arcameraPosition.ToString("F2");
             this.arcameraRotation = arcameraRotation.ToString("F5");
-            this.projectionMatrix = projectionMatrix.ToString("F5");
+            this.projectionMatrix = ToStringFromMat(projectionMatrix);
         }
 
         public Vector3 getArcameraPosition()
@@ -31,11 +32,6 @@ namespace ota.ndi
             return createRotation(this.arcameraRotation);
         }
 
-        //
-        //注意！！！！！！
-        //このMethodはBug含む
-        //後で修正必要！！！！！
-        //
         public Matrix4x4 getProjectionMatrix()
         {
             if (arcameraPosition == null) throw new Exception("Projection Matrix is null.");
@@ -58,11 +54,25 @@ namespace ota.ndi
         {
             var farray = convertStr2FloatArray(str);
             var mat = Matrix4x4.identity;
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 16; i++)
             {
                 mat[i] = farray[i];
             }
             return mat;
+        }
+
+        string ToStringFromMat(Matrix4x4 mat)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < 16; i++)
+            {
+                sb.Append(mat[i].ToString("F5"));
+                if (i != 15)
+                {
+                    sb.Append(" : ");
+                }
+            }
+            return sb.ToString();
         }
 
         float[] convertStr2FloatArray(string str)

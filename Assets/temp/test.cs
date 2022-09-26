@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -23,13 +24,23 @@ public class test : MonoBehaviour
         //Debug.Log(createRotation(_camera.transform.rotation.ToString("F5")));
         var tmpmat = _camera.projectionMatrix;
         Debug.Log("**" + tmpmat.ToString("F5"));
-        Debug.Log(createMatrix4x4(tmpmat.ToString("F5")));
+        Debug.Log(createMatrix4x4(ToStringFromMat(tmpmat)).ToString("F5"));
+        Debug.Log(createMatrix4x4(tmpmat.ToString("F5")).ToString("F5"));
     }
 
-    //void showMat(Matrix4x4 mat)
-    //{
-
-    //}
+    string ToStringFromMat(Matrix4x4 mat)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 16; i++)
+        {
+            sb.Append(mat[i].ToString("F5"));
+            if (i != 15)
+            {
+                sb.Append(" : ");
+            }
+        }
+        return sb.ToString();
+    }
 
     Vector3 createVector3(string str)
     {
@@ -47,7 +58,7 @@ public class test : MonoBehaviour
     {
         var farray = convertStr2FloatArray(str);
         var mat = Matrix4x4.identity;
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 16; i++) {
             mat[i] = farray[i];
         }
         return mat;
