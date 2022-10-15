@@ -40,6 +40,10 @@ namespace ota.ndi
         [Tooltip("The ARCameraManager which will produce frame events.")]
         ARCameraManager m_CameraManager;
 
+        [Space]
+        [SerializeField] float _minDepth = 0.2f;
+        [SerializeField] float _maxDepth = 3.2f;
+
         private IntPtr _sendInstance;
         private FormatConverter _formatConverter;
         private int _width;
@@ -131,7 +135,7 @@ namespace ota.ndi
             var config = m_CameraManager.currentConfiguration;
             var configtext = $"{config?.width}x{config?.height}{((bool)(config?.framerate.HasValue) ? $" at {config?.framerate.Value} Hz" : "")}{(config?.depthSensorSupported == Supported.Supported ? " depth sensor" : "")}";
             _resolutionInfoText.text = configtext;
-            _statusInfoText.text = "Position: " + Utils.FormatVector3Position(_arcamera.transform.position) + "\n" + "Rotation: " + Utils.FormatVector3Position(_arcamera.transform.rotation.eulerAngles) + "\n" + "Projection: " + _projection;
+            _statusInfoText.text = "Position: " + Utils.FormatVector3Position(_arcamera.transform.position) + "\n" + "Rotation: " + Utils.FormatVector3Position(_arcamera.transform.rotation.eulerAngles) + "\n" + "Projection:\n" + _projection;
 
             // Caluculate aspectratio
             float textureAspectRatio = (m_OcclusionManager.humanDepthTexture == null) ? 1.0f : ((float)m_OcclusionManager.humanDepthTexture.width / (float)m_OcclusionManager.humanDepthTexture.height);
@@ -189,7 +193,7 @@ namespace ota.ndi
                 //_projection[1, 1] *= (16.0f / 9) / _camera.aspect;
             }
 
-            MetadataInfo metainfo = new MetadataInfo(_arcamera.transform.position, _arcamera.transform.rotation, _projection);
+            MetadataInfo metainfo = new MetadataInfo(_arcamera.transform.position, _arcamera.transform.rotation, _projection, _minDepth, _maxDepth);
             String jsonString = JsonConvert.SerializeObject(metainfo);
             _metadataStr = $"<metadata><![CDATA[{jsonString}]]></metadata>";
             //Debug.Log(_metadataStr);
@@ -229,6 +233,8 @@ namespace ota.ndi
             _muxMaterial.SetTexture("_SourceTex", _sourceOriginTexture);
             _muxMaterial.SetTexture("_HumanStencil", _sourceStencilTexture);
             _muxMaterial.SetTexture("_EnvironmentDepth", _sourceDepthTexture);
+            var range = new Vector2(_minDepth, _maxDepth);
+            _muxMaterial.SetVector("_DepthRange", range);
             _senderRT.Release();
             Graphics.Blit(null, _senderRT, _muxMaterial, 0);
         }

@@ -23,9 +23,9 @@ public class test : MonoBehaviour
         //Debug.Log("**" + _camera.transform.rotation);
         //Debug.Log(createRotation(_camera.transform.rotation.ToString("F5")));
         var tmpmat = _camera.projectionMatrix;
-        Debug.Log("**" + tmpmat.ToString("F5"));
-        Debug.Log(createMatrix4x4(ToStringFromMat(tmpmat)).ToString("F5"));
-        Debug.Log(createMatrix4x4(tmpmat.ToString("F5")).ToString("F5"));
+        Debug.Log(tmpmat.ToString("F5"));
+        //Debug.Log(createMatrix4x4(ToStringFromMat(tmpmat)).ToString("F5"));
+        Debug.Log("*" + createMatrix4x4(tmpmat.ToString("F5")).ToString("F5"));
     }
 
     string ToStringFromMat(Matrix4x4 mat)

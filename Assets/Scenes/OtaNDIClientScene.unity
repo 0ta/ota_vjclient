@@ -1128,6 +1128,8 @@ MonoBehaviour:
   _shader: {fileID: 4800000, guid: 253b31997af7f47f9ad6b1c7c9aa23d1, type: 3}
   m_OcclusionManager: {fileID: 1016308350}
   m_CameraManager: {fileID: 527220351}
+  _minDepth: 0.2
+  _maxDepth: 3.2
 --- !u!4 &1278506283
 Transform:
   m_ObjectHideFlags: 0
@@ -1178,8 +1180,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 910, y: 750}
-  m_SizeDelta: {x: 500, y: 50}
+  m_AnchoredPosition: {x: 900, y: 750}
+  m_SizeDelta: {x: 700, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1469084365
 MonoBehaviour:
@@ -1201,9 +1203,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Position:
-
-    Rotation:'
+  m_text: "Position:\nRotation:\nProjection:\n-x.xxxxx\t-x.xxxxx\t-x.xxxxx\t-x.xxxxx"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1315,8 +1315,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 910, y: 790}
-  m_SizeDelta: {x: 500, y: 50}
+  m_AnchoredPosition: {x: 900, y: 790}
+  m_SizeDelta: {x: 700, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1779491493
 MonoBehaviour:
