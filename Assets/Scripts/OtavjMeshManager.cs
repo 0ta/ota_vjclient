@@ -12,13 +12,14 @@ namespace ota.ndi
     {
         public ARMeshManager m_MeshManager;
         public MeshFilter m_BackgroundMeshPrefab;
+        [HideInInspector]
+        public readonly Dictionary<string, MeshFilter> m_MeshMap = new Dictionary<string, MeshFilter>();
 
         MeshFilter m_meshFilter;
         Action<MeshFilter> m_BreakupMeshAction;
         Action<MeshFilter> m_UpdateMeshAction;
         Action<MeshFilter> m_RemoveMeshAction;
         //readonly Dictionary<TrackableId, MeshFilter> m_MeshMap = new Dictionary<TrackableId, MeshFilter>();
-        readonly Dictionary<string, MeshFilter> m_MeshMap = new Dictionary<string, MeshFilter>();
 
         void Awake()
         {
@@ -40,7 +41,6 @@ namespace ota.ndi
 
         void OnMeshesChanged(ARMeshesChangedEventArgs args)
         {
-            Debug.Log("onMeshsChangeds");
             if (args.added != null)
             {
                 args.added.ForEach(m_BreakupMeshAction);
@@ -59,17 +59,8 @@ namespace ota.ndi
 
         void BreakupMesh(MeshFilter meshFilter)
         {
-            Debug.Log("BreakupMesh");
             var vertices = meshFilter.mesh.vertices;
-            var normals = meshFilter.mesh.normals;
             var indices = meshFilter.mesh.triangles;
-            Debug.Log(meshFilter.name);
-            Debug.Log("length vertices:" + meshFilter.mesh.vertices.Length);
-            Debug.Log("length traiangles:" + meshFilter.mesh.triangles.Length);
-            Debug.Log("vertices:" + vertices.ToString());
-
-
-
 
             var parent = meshFilter.transform.parent;
             var bgmeshfilter = Instantiate(m_BackgroundMeshPrefab, parent);
@@ -79,69 +70,13 @@ namespace ota.ndi
 
             var meshId = ExtractTrackableId(meshFilter.name);
             m_MeshMap[meshId] = bgmeshfilter;
-            Debug.Log(meshFilter.name);
 
-            //XRMeshSubsystem meshSubsystem = m_MeshManager.subsystem as XRMeshSubsystem;
-            //if (meshSubsystem == null)
-            //{
-            //    return;
-            //}
-
-            //var meshId = ExtractTrackableId(meshFilter.name);
-            //var faceClassifications = meshSubsystem.GetFaceClassifications(meshId, Allocator.Persistent);
-
-            //if (!faceClassifications.IsCreated)
-            //{
-            //    return;
-            //}
-
-            //using (faceClassifications)
-            //{
-            //    if (faceClassifications.Length <= 0)
-            //    {
-            //        return;
-            //    }
-
-            //    var parent = meshFilter.transform.parent;
-
-            //    MeshFilter[] meshFilters = new MeshFilter[k_NumClassifications];
-
-            //    meshFilters[(int)ARMeshClassification.None] = (m_NoneMeshPrefab == null) ? null : Instantiate(m_NoneMeshPrefab, parent);
-            //    meshFilters[(int)ARMeshClassification.Wall] = (m_WallMeshPrefab == null) ? null : Instantiate(m_WallMeshPrefab, parent);
-            //    meshFilters[(int)ARMeshClassification.Floor] = (m_FloorMeshPrefab == null) ? null : Instantiate(m_FloorMeshPrefab, parent);
-            //    meshFilters[(int)ARMeshClassification.Ceiling] = (m_CeilingMeshPrefab == null) ? null : Instantiate(m_CeilingMeshPrefab, parent);
-            //    meshFilters[(int)ARMeshClassification.Table] = (m_TableMeshPrefab == null) ? null : Instantiate(m_TableMeshPrefab, parent);
-            //    meshFilters[(int)ARMeshClassification.Seat] = (m_SeatMeshPrefab == null) ? null : Instantiate(m_SeatMeshPrefab, parent);
-            //    meshFilters[(int)ARMeshClassification.Window] = (m_WindowMeshPrefab == null) ? null : Instantiate(m_WindowMeshPrefab, parent);
-            //    meshFilters[(int)ARMeshClassification.Door] = (m_DoorMeshPrefab == null) ? null : Instantiate(m_DoorMeshPrefab, parent);
-
-            //    m_MeshFrackingMap[meshId] = meshFilters;
-
-            //    var baseMesh = meshFilter.sharedMesh;
-            //    for (int i = 0; i < k_NumClassifications; ++i)
-            //    {
-            //        var classifiedMeshFilter = meshFilters[i];
-            //        if (classifiedMeshFilter != null)
-            //        {
-            //            var classifiedMesh = classifiedMeshFilter.mesh;
-            //            ExtractClassifiedMesh(baseMesh, faceClassifications, (ARMeshClassification)i, classifiedMesh);
-            //            meshFilters[i].mesh = classifiedMesh;
-            //        }
-            //    }
-            //}
         }
 
         void UpdateMesh(MeshFilter meshFilter)
         {
-            Debug.Log("Update!!!!!");
             var vertices = meshFilter.mesh.vertices;
-            var normals = meshFilter.mesh.normals;
             var indices = meshFilter.mesh.triangles;
-            Debug.Log(meshFilter.name);
-            Debug.Log("length vertices:" + meshFilter.mesh.vertices.Length);
-            Debug.Log("length traiangles:" + meshFilter.mesh.triangles.Length);
-            Debug.Log("vertices:" + vertices.ToString());
-
 
             var meshId = ExtractTrackableId(meshFilter.name);
             var bgmeshfilter = m_MeshMap[meshId];
@@ -153,10 +88,6 @@ namespace ota.ndi
 
         void RemoveMesh(MeshFilter meshFilter)
         {
-            Debug.Log("Delete!!!!!!!");
-            Debug.Log(meshFilter.name);
-
-
             var meshId = ExtractTrackableId(meshFilter.name);
             var bgmeshfilter = m_MeshMap[meshId];
             Object.Destroy(bgmeshfilter);

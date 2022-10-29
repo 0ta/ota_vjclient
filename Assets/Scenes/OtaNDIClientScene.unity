@@ -1131,6 +1131,7 @@ MonoBehaviour:
   m_CameraManager: {fileID: 527220351}
   _minDepth: 0.2
   _maxDepth: 3.2
+  _otavjMeshManager: {fileID: 1709905552}
 --- !u!4 &1278506283
 Transform:
   m_ObjectHideFlags: 0

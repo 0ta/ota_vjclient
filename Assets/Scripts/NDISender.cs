@@ -44,6 +44,9 @@ namespace ota.ndi
         [SerializeField] float _minDepth = 0.2f;
         [SerializeField] float _maxDepth = 3.2f;
 
+        [Space]
+        [SerializeField] OtavjMeshManager _otavjMeshManager;
+
         private IntPtr _sendInstance;
         private FormatConverter _formatConverter;
         private int _width;
@@ -63,6 +66,9 @@ namespace ota.ndi
         private Matrix4x4 _projection;
 
         private String _metadataStr;
+        private String _metadataStr4bg;
+
+        private BgMetadataManager _bgmetadatamanager;
 
         // Start is called before the first frame update
         void Start()
@@ -91,6 +97,8 @@ namespace ota.ndi
             _muxMaterial = new Material(_shader);
             _senderRT = new RenderTexture(1920, 1440, 0);
             _senderRT.Create();
+
+            _bgmetadatamanager = new BgMetadataManager();
         }
 
         void OnEnable()
@@ -180,7 +188,15 @@ namespace ota.ndi
             }
 
             //4. Send Image via NDI
-            Send(converted);
+            SendVideo(converted);
+
+            //5. Meke XML for BG verices related Metadata used by NDI connection
+            if (_otavjMeshManager.m_MeshMap.Count == 0) return;
+            var isSend = makeXML4BgMetadata();
+
+            //6. Send Metadata via NDI
+            if (!isSend) return;
+            SendMetadata();
         }
 
         private void makeXML4Metadata(ARCameraFrameEventArgs args)
@@ -197,6 +213,27 @@ namespace ota.ndi
             String jsonString = JsonConvert.SerializeObject(metainfo);
             _metadataStr = $"<metadata><![CDATA[{jsonString}]]></metadata>";
             //Debug.Log(_metadataStr);
+        }
+
+
+        private bool makeXML4BgMetadata()
+        {
+            if (_bgmetadatamanager.SentMeshMap == null)
+            {
+                _bgmetadatamanager.InitializeManager(_otavjMeshManager.m_MeshMap);
+                return false;
+            }
+            var bgmeshinfo = _bgmetadatamanager.getDeltaVerticesInfo(_otavjMeshManager.m_MeshMap);
+            var deletedMesh = _bgmetadatamanager.getDeletedMeshList(_otavjMeshManager.m_MeshMap);
+            if (bgmeshinfo.Count == 0 && deletedMesh.Count == 0)
+            {
+                return false;
+            }
+            BgMetadataInfo metainfo = new BgMetadataInfo(bgmeshinfo, deletedMesh);
+            String jsonString = JsonConvert.SerializeObject(metainfo);
+            _metadataStr4bg = $"<metadata><![CDATA[{jsonString}]]></metadata>";
+            Debug.Log(_metadataStr4bg);
+            return true;
         }
 
         unsafe private void RefreshCameraFeedTexture()
@@ -254,7 +291,7 @@ namespace ota.ndi
             return converted;
         }
 
-        private unsafe void Send(ComputeBuffer buffer)
+        private unsafe void SendVideo(ComputeBuffer buffer)
         {
             if (_nativeArray == null)
             {
@@ -306,6 +343,26 @@ namespace ota.ndi
 
             // Send via NDI
             NDIlib.send_send_video_async_v2(_sendInstance, ref frame);
+
+            //後処理
+            //メモリーリークしているように見えない。。。何故に。。
+            //とりあえずコメントにしておく
+            //Marshal.FreeHGlobal(pmetadata);
+            //pmetadata = IntPtr.Zero;
+        }
+
+        private unsafe void SendMetadata()
+        {
+            IntPtr pmetadata = Marshal.StringToHGlobalAnsi(_metadataStr4bg);
+
+            var frame = new NDIlib.metadata_frame_t
+            {
+                length = 0,
+                p_data = (IntPtr)pmetadata
+            };
+
+            // Send via NDI
+            NDIlib.send_send_metadata_64(_sendInstance, ref frame);
 
             //後処理
             //メモリーリークしているように見えない。。。何故に。。
