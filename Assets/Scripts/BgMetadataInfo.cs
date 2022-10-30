@@ -37,10 +37,11 @@ namespace ota.ndi {
             int i = 0;
             while (it.MoveNext())
             {
+                var j = i * 3;
                 Vector3 vec3 = (Vector3)it.Current;
-                ret[i] = vec3.x;
-                ret[i + 1] = vec3.y;
-                ret[i + 2] = vec3.z;
+                ret[j] = vec3.x;
+                ret[j + 1] = vec3.y;
+                ret[j + 2] = vec3.z;
                 i++;
             }
             return ret;
