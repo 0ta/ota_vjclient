@@ -22,6 +22,7 @@ Shader "otavj/CreateRT4Sender"
             sampler2D _SourceTex;
             sampler2D _HumanStencil;
             sampler2D _EnvironmentDepth;
+            float2 _DepthRange;
 
             float3 Hue2RGB(float hue)
             {
@@ -49,7 +50,13 @@ Shader "otavj/CreateRT4Sender"
                 float3 main = tex2D(_SourceTex, tc.zy);
                 float3 mask = tex2D(_HumanStencil, tc.zw);
                 float3 depth = tex2D(_EnvironmentDepth, tc.zw);
-                float3 srgb = texCoord.x < 0.5 ? main : (texCoord.y < 0.5 ? Hue2RGB(depth.x) : mask);
+
+                depth = (depth - _DepthRange.x) / (_DepthRange.y - _DepthRange.x);
+                float3 findepth = Hue2RGB(clamp(depth, 0, 0.8));
+
+                //float3 srgb = texCoord.x < 0.5 ? main : (texCoord.y < 0.5 ? Hue2RGB(depth.x) : mask);
+                float3 srgb = texCoord.x < 0.5 ? main : (texCoord.y < 0.5 ? findepth : mask);
+
                 //return float4(GammaToLinearSpace(srgb), 1);
                 return float4(srgb, 1);
             }
