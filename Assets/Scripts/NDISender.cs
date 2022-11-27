@@ -46,6 +46,7 @@ namespace ota.ndi
 
         [Space]
         [SerializeField] OtavjMeshManager _otavjMeshManager;
+        [SerializeField] InputHandler _inputHandler;
 
         private IntPtr _sendInstance;
         private FormatConverter _formatConverter;
@@ -209,7 +210,7 @@ namespace ota.ndi
                 //_projection[1, 1] *= (16.0f / 9) / _camera.aspect;
             }
 
-            MetadataInfo metainfo = new MetadataInfo(_arcamera.transform.position, _arcamera.transform.rotation, _projection, _minDepth, _maxDepth);
+            MetadataInfo metainfo = new MetadataInfo(_arcamera.transform.position, _arcamera.transform.rotation, _projection, _minDepth, _maxDepth, _inputHandler.GetToggles(), _inputHandler.GetSliders());
             String jsonString = JsonConvert.SerializeObject(metainfo);
             _metadataStr = $"<metadata><![CDATA[{jsonString}]]></metadata>";
             //Debug.Log(_metadataStr);
@@ -232,7 +233,7 @@ namespace ota.ndi
             BgMetadataInfo metainfo = new BgMetadataInfo(bgmeshinfo, deletedMesh);
             String jsonString = JsonConvert.SerializeObject(metainfo);
             _metadataStr4bg = $"<metadata><![CDATA[{jsonString}]]></metadata>";
-            Debug.Log(_metadataStr4bg);
+            //Debug.Log(_metadataStr4bg);
             return true;
         }
 

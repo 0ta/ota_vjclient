@@ -15,13 +15,19 @@ namespace ota.ndi
         public float minDepth { get; set; }
         public float maxDepth { get; set; }
 
-        public MetadataInfo(Vector3 arcameraPosition, Quaternion arcameraRotation, Matrix4x4 projectionMatrix, float minDepth, float maxDepth)
+        public bool[] toggles { get; set; }
+        public float[] sliders { get; set; }
+
+        public MetadataInfo(Vector3 arcameraPosition, Quaternion arcameraRotation, Matrix4x4 projectionMatrix, float minDepth, float maxDepth, bool[] toggles, float[] sliders)
         {
             this.arcameraPosition = arcameraPosition.ToString("F2");
             this.arcameraRotation = arcameraRotation.ToString("F5");
             this.projectionMatrix = ToStringFromMat(projectionMatrix);
             this.minDepth = minDepth;
             this.maxDepth = maxDepth;
+
+            this.toggles = toggles;
+            this.sliders = sliders;
         }
 
         public Vector3 getArcameraPosition()
