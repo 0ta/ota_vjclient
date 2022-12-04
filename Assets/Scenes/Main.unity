@@ -4642,7 +4642,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7766761898034417717, guid: ae767be11c3834d6da6c4ced5da9da59, type: 3}
       propertyPath: m_text
-      value: BG WF Fullfill
+      value: BG WF Fulfill
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae767be11c3834d6da6c4ced5da9da59, type: 3}
