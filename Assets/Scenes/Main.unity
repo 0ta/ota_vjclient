@@ -5123,6 +5123,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 454822079218711015, guid: 7d670f3d09cc141d9978e7a9591c27b9, type: 3}
+      propertyPath: m_MaxValue
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 454822079218711015, guid: 7d670f3d09cc141d9978e7a9591c27b9, type: 3}
+      propertyPath: m_MinValue
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 454822079218711016, guid: 7d670f3d09cc141d9978e7a9591c27b9, type: 3}
       propertyPath: DefaultValue
       value: 0
@@ -9199,6 +9207,14 @@ PrefabInstance:
     - target: {fileID: 454822079218711014, guid: 7d670f3d09cc141d9978e7a9591c27b9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 454822079218711015, guid: 7d670f3d09cc141d9978e7a9591c27b9, type: 3}
+      propertyPath: m_MaxValue
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 454822079218711015, guid: 7d670f3d09cc141d9978e7a9591c27b9, type: 3}
+      propertyPath: m_MinValue
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 454822079218711016, guid: 7d670f3d09cc141d9978e7a9591c27b9, type: 3}
       propertyPath: DefaultValue
